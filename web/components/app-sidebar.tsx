@@ -123,8 +123,8 @@ const data = {
           url: "/admin/settings/users",
         },
         {
-          title: "Permissions",
-          url: "/admin/settings/permissions",
+          title: "Roles",
+          url: "/admin/settings/roles",
         },
         {
           title: "Integrations",
