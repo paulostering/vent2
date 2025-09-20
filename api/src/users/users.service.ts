@@ -11,8 +11,10 @@ export class UsersService {
   private users: User[] = [
     {
       id: '1',
+      firstName: 'Admin',
+      lastName: 'User',
       email: 'admin@example.com',
-      name: 'Admin User',
+      phone: '+1 (555) 123-0001',
       passwordHash: bcrypt.hashSync('password123', 10),
       tenantId: 'tenant-1',
       type: 'employee',
@@ -24,8 +26,10 @@ export class UsersService {
     },
     {
       id: '2',
+      firstName: 'Customer',
+      lastName: 'Manager',
       email: 'customer@example.com',
-      name: 'Customer Manager',
+      phone: '+1 (555) 123-0002',
       passwordHash: bcrypt.hashSync('password123', 10),
       tenantId: 'tenant-2',
       type: 'customer',
@@ -37,8 +41,10 @@ export class UsersService {
     },
     {
       id: '3',
+      firstName: 'Warehouse',
+      lastName: 'Staff',
       email: 'warehouse@example.com',
-      name: 'Warehouse Staff',
+      phone: '+1 (555) 123-0003',
       passwordHash: bcrypt.hashSync('password123', 10),
       tenantId: 'tenant-1',
       type: 'employee',
@@ -50,8 +56,10 @@ export class UsersService {
     },
     {
       id: '4',
+      firstName: 'Support',
+      lastName: 'Agent',
       email: 'support@example.com',
-      name: 'Support Agent',
+      phone: '+1 (555) 123-0004',
       passwordHash: bcrypt.hashSync('password123', 10),
       tenantId: 'tenant-1',
       type: 'employee',
@@ -88,8 +96,10 @@ export class UsersService {
     
     const newUser: User = {
       id: Date.now().toString(), // In real app, use UUID
+      firstName: createUserDto.firstName,
+      lastName: createUserDto.lastName,
       email: createUserDto.email,
-      name: createUserDto.name,
+      phone: createUserDto.phone,
       passwordHash: hashedPassword,
       type: createUserDto.type,
       role: createUserDto.role,

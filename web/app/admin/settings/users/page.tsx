@@ -44,8 +44,10 @@ import { UserDialog } from "@/components/forms/user-dialog";
 const mockUsers: User[] = [
   {
     id: '1',
+    firstName: 'Admin',
+    lastName: 'User',
     email: 'admin@example.com',
-    name: 'Admin User',
+    phone: '+1 (555) 123-0001',
     type: 'employee',
     role: 'admin',
     tenantId: 'tenant-1',
@@ -56,8 +58,10 @@ const mockUsers: User[] = [
   },
   {
     id: '3',
+    firstName: 'Warehouse',
+    lastName: 'Staff',
     email: 'warehouse@example.com',
-    name: 'Warehouse Staff',
+    phone: '+1 (555) 123-0003',
     type: 'employee',
     role: 'warehouse',
     tenantId: 'tenant-1',
@@ -68,8 +72,10 @@ const mockUsers: User[] = [
   },
   {
     id: '4',
+    firstName: 'Support',
+    lastName: 'Agent',
     email: 'support@example.com',
-    name: 'Support Agent',
+    phone: '+1 (555) 123-0004',
     type: 'employee',
     role: 'customer_service',
     tenantId: 'tenant-1',
@@ -79,8 +85,10 @@ const mockUsers: User[] = [
   },
   {
     id: '5',
+    firstName: 'Operations',
+    lastName: 'Manager',
     email: 'manager@example.com',
-    name: 'Operations Manager',
+    phone: '+1 (555) 123-0005',
     type: 'employee',
     role: 'manager',
     tenantId: 'tenant-1',
@@ -135,8 +143,11 @@ export default function UsersPage() {
     // Search filter
     if (searchTerm) {
       filtered = filtered.filter(user =>
-        user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchTerm.toLowerCase())
+        user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (user.phone && user.phone.toLowerCase().includes(searchTerm.toLowerCase()))
       );
     }
 
@@ -288,11 +299,11 @@ export default function UsersPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>User</TableHead>
-              <TableHead>Type</TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Phone</TableHead>
               <TableHead>Role</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Last Login</TableHead>
               <TableHead>Created</TableHead>
               <TableHead className="w-[70px]">Actions</TableHead>
             </TableRow>
@@ -344,25 +355,27 @@ export default function UsersPage() {
                 <TableRow key={user.id}>
                   <TableCell>
                     <div className="flex flex-col">
-                      <span className="font-medium">{user.name}</span>
-                      <span className="text-sm text-muted-foreground">{user.email}</span>
+                      <span className="font-medium">{user.firstName} {user.lastName}</span>
+                      <span className="text-sm text-muted-foreground">ID: {user.id}</span>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={user.type === 'employee' ? 'default' : 'secondary'}>
-                      {user.type}
-                    </Badge>
+                    <span className="text-sm">{user.email}</span>
                   </TableCell>
                   <TableCell>
-                    <span className="capitalize">{formatRole(user.role)}</span>
+                    <span className="text-sm text-muted-foreground">
+                      {user.phone || 'Not provided'}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="secondary">
+                      {formatRole(user.role)}
+                    </Badge>
                   </TableCell>
                   <TableCell>
                     <Badge variant={user.isActive ? 'default' : 'destructive'}>
                       {user.isActive ? 'Active' : 'Inactive'}
                     </Badge>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {user.lastLogin ? formatDate(user.lastLogin) : 'Never'}
                   </TableCell>
                   <TableCell className="text-muted-foreground">
                     {formatDate(user.createdAt)}

@@ -1,7 +1,9 @@
 export interface User {
   id: string;
+  firstName: string;
+  lastName: string;
   email: string;
-  name: string;
+  phone?: string;
   type: 'employee' | 'customer';
   role: string;
   tenantId: string;
@@ -12,8 +14,10 @@ export interface User {
 }
 
 export interface CreateUserData {
+  firstName: string;
+  lastName: string;
   email: string;
-  name: string;
+  phone?: string;
   password: string;
   type: 'employee' | 'customer';
   role: string;
@@ -21,7 +25,10 @@ export interface CreateUserData {
 }
 
 export interface UpdateUserData {
-  name?: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
   type?: 'employee' | 'customer';
   role?: string;
   isActive?: boolean;

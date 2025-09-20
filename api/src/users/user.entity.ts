@@ -1,7 +1,9 @@
 export interface User {
   id: string;
+  firstName: string;
+  lastName: string;
   email: string;
-  name: string;
+  phone?: string;
   passwordHash: string;
   tenantId: string;
   type: 'employee' | 'customer';

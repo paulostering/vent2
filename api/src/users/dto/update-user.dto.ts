@@ -1,10 +1,23 @@
-import { IsString, IsEnum, IsBoolean, IsOptional, MinLength } from 'class-validator';
+import { IsString, IsEnum, IsBoolean, IsOptional, MinLength, IsEmail } from 'class-validator';
 
 export class UpdateUserDto {
   @IsString()
   @MinLength(2)
   @IsOptional()
-  name?: string;
+  firstName?: string;
+
+  @IsString()
+  @MinLength(2)
+  @IsOptional()
+  lastName?: string;
+
+  @IsEmail()
+  @IsOptional()
+  email?: string;
+
+  @IsString()
+  @IsOptional()
+  phone?: string;
 
   @IsEnum(['employee'])
   @IsOptional()

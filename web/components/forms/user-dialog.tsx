@@ -39,8 +39,10 @@ import {
 } from "@/lib/types/user";
 
 const createUserSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
+  firstName: z.string().min(2, "First name must be at least 2 characters"),
+  lastName: z.string().min(2, "Last name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
+  phone: z.string().optional(),
   password: z.string().min(6, "Password must be at least 6 characters"),
   type: z.enum(['employee']),
   role: z.string().min(1, "Role is required"),
@@ -48,7 +50,10 @@ const createUserSchema = z.object({
 });
 
 const updateUserSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
+  firstName: z.string().min(2, "First name must be at least 2 characters"),
+  lastName: z.string().min(2, "Last name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+  phone: z.string().optional(),
   type: z.enum(['employee']),
   role: z.string().min(1, "Role is required"),
   isActive: z.boolean(),
@@ -72,14 +77,19 @@ export function UserDialog({ open, onOpenChange, user, mode, onSave }: UserSheet
   const form = useForm({
     resolver: zodResolver(schema),
     defaultValues: isCreate ? {
-      name: '',
+      firstName: '',
+      lastName: '',
       email: '',
+      phone: '',
       password: '',
       type: 'employee' as const,
       role: '',
       tenantId: 'tenant-1', // Default tenant
     } : {
-      name: user?.name || '',
+      firstName: user?.firstName || '',
+      lastName: user?.lastName || '',
+      email: user?.email || '',
+      phone: user?.phone || '',
       type: 'employee' as const, // Always employee
       role: user?.role || '',
       isActive: user?.isActive ?? true,
@@ -90,7 +100,10 @@ export function UserDialog({ open, onOpenChange, user, mode, onSave }: UserSheet
   useEffect(() => {
     if (user && !isCreate) {
       form.reset({
-        name: user.name,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        phone: user.phone || '',
         type: 'employee', // Always employee
         role: user.role,
         isActive: user.isActive,
@@ -98,8 +111,10 @@ export function UserDialog({ open, onOpenChange, user, mode, onSave }: UserSheet
       setSelectedType('employee');
     } else if (isCreate) {
       form.reset({
-        name: '',
+        firstName: '',
+        lastName: '',
         email: '',
+        phone: '',
         password: '',
         type: 'employee',
         role: '',
@@ -147,41 +162,73 @@ export function UserDialog({ open, onOpenChange, user, mode, onSave }: UserSheet
         <div className="flex-1 overflow-y-auto py-6 px-4">
           <Form {...form}>
             <div className="space-y-6">
-              {/* Name Field */}
+              {/* Name Fields - First and Last in one row */}
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="firstName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>First Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter first name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="lastName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Last Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter last name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Email Field */}
               <FormField
                 control={form.control}
-                name="name"
+                name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Full Name</FormLabel>
+                    <FormLabel>Email Address</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter full name" {...field} />
+                      <Input 
+                        type="email" 
+                        placeholder="user@example.com" 
+                        {...field} 
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {/* Email Field (Create only) */}
-              {isCreate && (
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email Address</FormLabel>
-                      <FormControl>
-                        <Input 
-                          type="email" 
-                          placeholder="user@example.com" 
-                          {...field} 
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
+              {/* Phone Field */}
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone Number (Optional)</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="tel" 
+                        placeholder="+1 (555) 123-4567" 
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               {/* Password Field (Create only) */}
               {isCreate && (

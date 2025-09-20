@@ -4,10 +4,18 @@ import { EmployeeRole, CustomerRole } from '../user.entity';
 export class CreateUserDto {
   @IsString()
   @MinLength(2)
-  name: string;
+  firstName: string;
+
+  @IsString()
+  @MinLength(2)
+  lastName: string;
 
   @IsEmail()
   email: string;
+
+  @IsString()
+  @IsOptional()
+  phone?: string;
 
   @IsString()
   @MinLength(6)
