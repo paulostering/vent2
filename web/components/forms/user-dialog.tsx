@@ -131,7 +131,7 @@ export function UserDialog({ open, onOpenChange, user, mode, onSave }: UserSheet
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="sm:max-w-[540px] w-[90vw]">
+      <SheetContent className="sm:max-w-[540px] w-[90vw] flex flex-col">
         <SheetHeader>
           <SheetTitle>
             {isCreate ? 'Create New User' : `Edit ${user?.name}`}
@@ -144,173 +144,177 @@ export function UserDialog({ open, onOpenChange, user, mode, onSave }: UserSheet
           </SheetDescription>
         </SheetHeader>
 
-        <div className="py-6 px-4">
+        <div className="flex-1 overflow-y-auto py-6 px-4">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Name Field */}
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Full Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter full name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Email Field (Create only) */}
-            {isCreate && (
+            <div className="space-y-6">
+              {/* Name Field */}
               <FormField
                 control={form.control}
-                name="email"
+                name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email Address</FormLabel>
+                    <FormLabel>Full Name</FormLabel>
                     <FormControl>
-                      <Input 
-                        type="email" 
-                        placeholder="user@example.com" 
-                        {...field} 
-                      />
+                      <Input placeholder="Enter full name" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            )}
 
-            {/* Password Field (Create only) */}
-            {isCreate && (
+              {/* Email Field (Create only) */}
+              {isCreate && (
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email Address</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="email" 
+                          placeholder="user@example.com" 
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {/* Password Field (Create only) */}
+              {isCreate && (
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="password" 
+                          placeholder="••••••••" 
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {/* User Type - Fixed to Employee */}
               <FormField
                 control={form.control}
-                name="password"
+                name="type"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="password" 
-                        placeholder="••••••••" 
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
-
-            {/* User Type - Fixed to Employee */}
-            <FormField
-              control={form.control}
-              name="type"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>User Type</FormLabel>
-                  <Select 
-                    onValueChange={(value) => {
-                      field.onChange(value);
-                      setSelectedType(value as 'employee' | 'customer');
-                    }} 
-                    defaultValue="employee"
-                    disabled
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Employee" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="employee">Employee</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Role */}
-            <FormField
-              control={form.control}
-              name="role"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Role</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select role" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {availableRoles.map((role) => (
-                        <SelectItem key={role.value} value={role.value}>
-                          {role.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Status (Edit only) */}
-            {!isCreate && (
-              <FormField
-                control={form.control}
-                name="isActive"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Status</FormLabel>
+                    <FormLabel>User Type</FormLabel>
                     <Select 
-                      onValueChange={(value) => field.onChange(value === 'true')} 
-                      defaultValue={field.value ? 'true' : 'false'}
+                      onValueChange={(value) => {
+                        field.onChange(value);
+                        setSelectedType(value as 'employee' | 'customer');
+                      }} 
+                      defaultValue="employee"
+                      disabled
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue />
+                          <SelectValue placeholder="Employee" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="true">
-                          <div className="flex items-center gap-2">
-                            <Badge variant="default">Active</Badge>
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="false">
-                          <div className="flex items-center gap-2">
-                            <Badge variant="destructive">Inactive</Badge>
-                          </div>
-                        </SelectItem>
+                        <SelectItem value="employee">Employee</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            )}
 
-              <SheetFooter className="flex gap-2 pt-6 px-4">
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  onClick={() => onOpenChange(false)}
-                  disabled={loading}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={loading}>
-                  {loading ? 'Saving...' : isCreate ? 'Create User' : 'Save Changes'}
-                </Button>
-              </SheetFooter>
-            </form>
+              {/* Role */}
+              <FormField
+                control={form.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Role</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select role" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {availableRoles.map((role) => (
+                          <SelectItem key={role.value} value={role.value}>
+                            {role.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Status (Edit only) */}
+              {!isCreate && (
+                <FormField
+                  control={form.control}
+                  name="isActive"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Status</FormLabel>
+                      <Select 
+                        onValueChange={(value) => field.onChange(value === 'true')} 
+                        defaultValue={field.value ? 'true' : 'false'}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="true">
+                            <div className="flex items-center gap-2">
+                              <Badge variant="default">Active</Badge>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="false">
+                            <div className="flex items-center gap-2">
+                              <Badge variant="destructive">Inactive</Badge>
+                            </div>
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+            </div>
           </Form>
         </div>
+
+        <SheetFooter className="flex gap-2 pt-6 px-4 border-t">
+          <Button 
+            type="button" 
+            variant="outline" 
+            onClick={() => onOpenChange(false)}
+            disabled={loading}
+          >
+            Cancel
+          </Button>
+          <Button 
+            type="submit" 
+            disabled={loading}
+            onClick={form.handleSubmit(onSubmit)}
+          >
+            {loading ? 'Saving...' : isCreate ? 'Create User' : 'Save Changes'}
+          </Button>
+        </SheetFooter>
       </SheetContent>
     </Sheet>
   );

@@ -151,7 +151,7 @@ export function RoleSheet({ open, onOpenChange, role, mode, onSave }: RoleSheetP
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="sm:max-w-[600px] w-[90vw]">
+      <SheetContent className="sm:max-w-[600px] w-[90vw] flex flex-col">
         <SheetHeader>
           <SheetTitle>
             {isCreate ? 'Create New Role' : `Edit ${role?.name}`}
@@ -164,9 +164,9 @@ export function RoleSheet({ open, onOpenChange, role, mode, onSave }: RoleSheetP
           </SheetDescription>
         </SheetHeader>
 
-        <div className="py-6 px-4">
+        <div className="flex-1 overflow-y-auto py-6 px-4">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="space-y-6">
               {/* Role Name */}
               <FormField
                 control={form.control}
@@ -295,23 +295,27 @@ export function RoleSheet({ open, onOpenChange, role, mode, onSave }: RoleSheetP
                   )}
                 />
               )}
-
-              <SheetFooter className="flex gap-2 pt-6 px-4">
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  onClick={() => onOpenChange(false)}
-                  disabled={loading}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={loading}>
-                  {loading ? 'Saving...' : isCreate ? 'Create Role' : 'Save Changes'}
-                </Button>
-              </SheetFooter>
-            </form>
+            </div>
           </Form>
         </div>
+
+        <SheetFooter className="flex gap-2 pt-6 px-4 border-t">
+          <Button 
+            type="button" 
+            variant="outline" 
+            onClick={() => onOpenChange(false)}
+            disabled={loading}
+          >
+            Cancel
+          </Button>
+          <Button 
+            type="submit" 
+            disabled={loading}
+            onClick={form.handleSubmit(onSubmit)}
+          >
+            {loading ? 'Saving...' : isCreate ? 'Create Role' : 'Save Changes'}
+          </Button>
+        </SheetFooter>
       </SheetContent>
     </Sheet>
   );
