@@ -100,17 +100,25 @@ export class UsersService {
       }
     }
 
+    // Prepare update data
+    const updateData: any = {
+      firstName: updateUserDto.firstName,
+      lastName: updateUserDto.lastName,
+      email: updateUserDto.email,
+      phone: updateUserDto.phone,
+      role: updateUserDto.role,
+      isActive: updateUserDto.isActive,
+      updatedAt: new Date(),
+    };
+
+    // Only update password if provided
+    if (updateUserDto.password && updateUserDto.password.trim() !== '') {
+      updateData.passwordHash = await bcrypt.hash(updateUserDto.password, 10);
+    }
+
     const updatedUser = await this.prisma.user.update({
       where: { id },
-      data: {
-        firstName: updateUserDto.firstName,
-        lastName: updateUserDto.lastName,
-        email: updateUserDto.email,
-        phone: updateUserDto.phone,
-        role: updateUserDto.role,
-        isActive: updateUserDto.isActive,
-        updatedAt: new Date(),
-      },
+      data: updateData,
       include: {
         tenant: true,
       },

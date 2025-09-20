@@ -54,6 +54,9 @@ const updateUserSchema = z.object({
   lastName: z.string().min(2, "Last name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
   phone: z.string().optional().or(z.literal('')),
+  password: z.string().optional().or(z.literal('')).refine((val) => !val || val.length >= 6, {
+    message: "Password must be at least 6 characters if provided",
+  }),
   type: z.enum(['employee']),
   role: z.string().min(1, "Role is required"),
   isActive: z.boolean(),
@@ -90,6 +93,7 @@ export function UserDialog({ open, onOpenChange, user, mode, onSave }: UserSheet
       lastName: user?.lastName ?? '',
       email: user?.email ?? '',
       phone: user?.phone ?? '',
+      password: '', // Empty for edit mode - only set if user wants to change
       type: 'employee' as const, // Always employee
       role: user?.role ?? '',
       isActive: user?.isActive ?? true,
@@ -104,6 +108,7 @@ export function UserDialog({ open, onOpenChange, user, mode, onSave }: UserSheet
         lastName: user.lastName ?? '',
         email: user.email ?? '',
         phone: user.phone ?? '',
+        password: '', // Empty for edit mode
         type: 'employee', // Always employee
         role: user.role ?? '',
         isActive: user.isActive ?? true,
@@ -132,6 +137,11 @@ export function UserDialog({ open, onOpenChange, user, mode, onSave }: UserSheet
   const onSubmit = async (data: any) => {
     setLoading(true);
     try {
+      // Remove empty password field for edit mode
+      if (!isCreate && (!data.password || data.password.trim() === '')) {
+        delete data.password;
+      }
+      
       await new Promise(resolve => setTimeout(resolve, 500)); // Simulate API call
       onSave(data);
       form.reset();
@@ -230,26 +240,31 @@ export function UserDialog({ open, onOpenChange, user, mode, onSave }: UserSheet
                 )}
               />
 
-              {/* Password Field (Create only) */}
-              {isCreate && (
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Password</FormLabel>
-                      <FormControl>
-                        <Input 
-                          type="password" 
-                          placeholder="••••••••" 
-                          {...field} 
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
+              {/* Password Field */}
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      {isCreate ? 'Password' : 'New Password (Optional)'}
+                    </FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="password" 
+                        placeholder={isCreate ? "••••••••" : "Leave blank to keep current password"} 
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                    {!isCreate && (
+                      <p className="text-xs text-muted-foreground">
+                        Only enter a password if you want to change it
+                      </p>
+                    )}
+                  </FormItem>
+                )}
+              />
 
               {/* User Type - Hidden, always employee */}
               <FormField

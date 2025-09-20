@@ -29,6 +29,7 @@ export interface UpdateUserData {
   lastName?: string;
   email?: string;
   phone?: string;
+  password?: string; // Optional password change
   type?: 'employee' | 'customer';
   role?: string;
   isActive?: boolean;

@@ -19,6 +19,11 @@ export class UpdateUserDto {
   @IsOptional()
   phone?: string;
 
+  @IsString()
+  @MinLength(6)
+  @IsOptional()
+  password?: string;
+
   @IsEnum(['employee'])
   @IsOptional()
   type?: 'employee';

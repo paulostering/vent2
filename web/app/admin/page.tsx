@@ -1,3 +1,6 @@
+'use client';
+
+import { useState, useEffect } from "react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -8,8 +11,49 @@ import {
 } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
+import { formatRole } from "@/lib/types/user";
+
+interface UserInfo {
+  id: string;
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  type: string;
+  role: string;
+}
 
 export default function AdminDashboard() {
+  const [user, setUser] = useState<UserInfo | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const response = await fetch('/api/auth/me', {
+          credentials: 'include',
+        });
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData);
+        }
+      } catch (error) {
+        console.error('Failed to fetch user info:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
+
+  const getUserDisplayName = () => {
+    if (!user) return 'Loading...';
+    if (user.firstName && user.lastName) {
+      return `${user.firstName} ${user.lastName}`;
+    }
+    return user.email;
+  };
+
   return (
     <>
       <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
@@ -39,13 +83,21 @@ export default function AdminDashboard() {
         <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-medium text-blue-900 dark:text-blue-100">Admin Dashboard Demo</h3>
+              <h3 className="font-medium text-blue-900 dark:text-blue-100">Admin Dashboard</h3>
               <p className="text-sm text-blue-700 dark:text-blue-300">
-                You're logged in as: <strong>admin@example.com</strong> (Employee • Admin Role)
+                {loading ? (
+                  'Loading user information...'
+                ) : user ? (
+                  <>
+                    You're logged in as: <strong>{getUserDisplayName()}</strong> ({user.email}) • {formatRole(user.role)} Role
+                  </>
+                ) : (
+                  'User information not available'
+                )}
               </p>
             </div>
             <div className="text-xs text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded">
-              Demo Mode
+              Real Data
             </div>
           </div>
         </div>

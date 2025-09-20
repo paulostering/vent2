@@ -121,13 +121,13 @@ export default function UsersPage() {
           const userData = await response.json();
           setUsers(userData);
         } else {
-          // Fallback to mock data if API fails
-          setUsers(mockUsers);
+          console.error('Failed to fetch users:', response.status);
+          setUsers([]); // No fallback to mock data
         }
       } catch (error) {
         console.error('Failed to fetch users:', error);
-        // Fallback to mock data
-        setUsers(mockUsers);
+        // No fallback - use real data only
+        setUsers([]);
       } finally {
         setLoading(false);
       }
