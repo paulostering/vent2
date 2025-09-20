@@ -1,0 +1,28 @@
+{
+  "name": "erp-crm",
+  "version": "1.0.0",
+  "description": "ERP/CRM Monorepo with Next.js and NestJS",
+  "private": true,
+  "workspaces": [
+    "web",
+    "api"
+  ],
+  "scripts": {
+    "dev": "pnpm run --parallel dev",
+    "dev:web": "pnpm --filter web dev",
+    "dev:api": "pnpm --filter api start:dev",
+    "build": "pnpm run --recursive build",
+    "build:web": "pnpm --filter web build",
+    "build:api": "pnpm --filter api build",
+    "start": "pnpm run --parallel start",
+    "start:web": "pnpm --filter web start",
+    "start:api": "pnpm --filter api start:prod",
+    "lint": "pnpm run --recursive lint",
+    "test": "pnpm run --recursive test",
+    "clean": "pnpm run --recursive clean && rm -rf node_modules"
+  },
+  "keywords": ["erp", "crm", "nextjs", "nestjs", "monorepo"],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.17.0"
+}
