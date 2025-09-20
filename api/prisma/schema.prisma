@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 model User {
@@ -35,7 +35,7 @@ model Tenant {
   id        String   @id @default(cuid())
   name      String
   subdomain String   @unique
-  settings  Json     @default("{}")
+  settings  String   @default("{}")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -49,7 +49,7 @@ model Role {
   id          String   @id @default(cuid())
   name        String   @unique
   description String
-  permissions Json     @default("[]")
+  permissions String   @default("[]")
   isActive    Boolean  @default(true)
   userCount   Int      @default(0)
   createdAt   DateTime @default(now())

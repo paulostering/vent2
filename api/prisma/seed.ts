@@ -11,10 +11,10 @@ async function main() {
     create: {
       name: 'Main Organization',
       subdomain: 'main',
-      settings: {
+      settings: JSON.stringify({
         theme: 'default',
         features: ['user_management', 'role_management'],
-      },
+      }),
     },
   });
 
@@ -129,7 +129,7 @@ async function main() {
       create: {
         name: roleData.name,
         description: roleData.description,
-        permissions: roleData.permissions,
+        permissions: JSON.stringify(roleData.permissions),
         isActive: true,
         userCount: 0, // Will be updated by application logic
       },
