@@ -299,22 +299,26 @@ export function RoleSheet({ open, onOpenChange, role, mode, onSave }: RoleSheetP
           </Form>
         </div>
 
-        <SheetFooter className="flex gap-2 pt-6 px-4 border-t">
-          <Button 
-            type="button" 
-            variant="outline" 
-            onClick={() => onOpenChange(false)}
-            disabled={loading}
-          >
-            Cancel
-          </Button>
-          <Button 
-            type="submit" 
-            disabled={loading}
-            onClick={form.handleSubmit(onSubmit)}
-          >
-            {loading ? 'Saving...' : isCreate ? 'Create Role' : 'Save Changes'}
-          </Button>
+        <SheetFooter className="pt-6 px-4 border-t">
+          <div className="flex gap-2 w-full">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => onOpenChange(false)}
+              disabled={loading}
+              className="flex-1"
+            >
+              Cancel
+            </Button>
+            <Button 
+              type="submit" 
+              disabled={loading}
+              onClick={form.handleSubmit(onSubmit)}
+              className="flex-1"
+            >
+              {loading ? 'Saving...' : isCreate ? 'Create Role' : 'Save Changes'}
+            </Button>
+          </div>
         </SheetFooter>
       </SheetContent>
     </Sheet>
