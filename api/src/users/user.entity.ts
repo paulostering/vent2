@@ -1,6 +1,7 @@
 export interface User {
   id: string;
   email: string;
+  name: string;
   passwordHash: string;
   tenantId: string;
   type: 'employee' | 'customer';
@@ -8,6 +9,7 @@ export interface User {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+  lastLogin?: Date;
 }
 
 export interface Tenant {
@@ -43,3 +45,4 @@ export enum CustomerRole {
   MANAGER = 'manager',
   TEAM_MEMBER = 'team_member',
 }
+

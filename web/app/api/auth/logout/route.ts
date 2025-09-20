@@ -31,3 +31,4 @@ export async function GET(request: Request) {
   // Allow GET requests for easier logout links
   return POST(request);
 }
+
