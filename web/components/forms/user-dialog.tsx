@@ -42,7 +42,7 @@ const createUserSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters"),
   lastName: z.string().min(2, "Last name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
-  phone: z.string().optional(),
+  phone: z.string().optional().or(z.literal('')),
   password: z.string().min(6, "Password must be at least 6 characters"),
   type: z.enum(['employee']),
   role: z.string().min(1, "Role is required"),
@@ -53,7 +53,7 @@ const updateUserSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters"),
   lastName: z.string().min(2, "Last name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
-  phone: z.string().optional(),
+  phone: z.string().optional().or(z.literal('')),
   type: z.enum(['employee']),
   role: z.string().min(1, "Role is required"),
   isActive: z.boolean(),
@@ -86,12 +86,12 @@ export function UserDialog({ open, onOpenChange, user, mode, onSave }: UserSheet
       role: '',
       tenantId: 'tenant-1', // Default tenant
     } : {
-      firstName: user?.firstName || '',
-      lastName: user?.lastName || '',
-      email: user?.email || '',
-      phone: user?.phone || '',
+      firstName: user?.firstName ?? '',
+      lastName: user?.lastName ?? '',
+      email: user?.email ?? '',
+      phone: user?.phone ?? '',
       type: 'employee' as const, // Always employee
-      role: user?.role || '',
+      role: user?.role ?? '',
       isActive: user?.isActive ?? true,
     },
   });
@@ -100,13 +100,13 @@ export function UserDialog({ open, onOpenChange, user, mode, onSave }: UserSheet
   useEffect(() => {
     if (user && !isCreate) {
       form.reset({
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        phone: user.phone || '',
+        firstName: user.firstName ?? '',
+        lastName: user.lastName ?? '',
+        email: user.email ?? '',
+        phone: user.phone ?? '',
         type: 'employee', // Always employee
-        role: user.role,
-        isActive: user.isActive,
+        role: user.role ?? '',
+        isActive: user.isActive ?? true,
       });
       setSelectedType('employee');
     } else if (isCreate) {
