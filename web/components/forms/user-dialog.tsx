@@ -144,7 +144,7 @@ export function UserDialog({ open, onOpenChange, user, mode, onSave }: UserSheet
           </SheetDescription>
         </SheetHeader>
 
-        <div className="py-6">
+        <div className="py-6 px-4">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             {/* Name Field */}
@@ -298,7 +298,7 @@ export function UserDialog({ open, onOpenChange, user, mode, onSave }: UserSheet
               />
             )}
 
-              <SheetFooter className="flex gap-2 pt-6">
+              <SheetFooter className="flex gap-2 pt-6 px-4">
                 <Button 
                   type="button" 
                   variant="outline" 
