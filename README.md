@@ -252,11 +252,33 @@ For testing the authentication system (credentials shown on login page):
 - **Subdomain Access**: Add `127.0.0.1 admin.localhost` and `127.0.0.1 customer.localhost` to `/etc/hosts`
 - **API Connection**: Verify API health at http://localhost:4000/auth/health
 
+## Repository
+
+- **GitHub**: https://github.com/paulostering/vent2.git
+- **Clone**: `git clone https://github.com/paulostering/vent2.git`
+- **Branch**: `main`
+
 ## Contributing
 
-1. Follow the engineering guidelines in `/docs/`
-2. Use conventional commits for all changes
-3. Ensure all CI gates pass before submitting PRs
-4. Test authentication flows thoroughly on both admin and customer portals
-5. Maintain HIPAA compliance standards
-6. Update this README.md after any significant changes
+1. **Setup**: Clone repository and run `pnpm install` to install dependencies
+2. **Development**: Use `pnpm dev` to start both web and API servers
+3. **Guidelines**: Follow the engineering guidelines in `/docs/`
+4. **Commits**: Use conventional commits for all changes
+5. **Testing**: Test authentication flows thoroughly on both admin and customer portals
+6. **Quality**: Ensure all CI gates pass before submitting PRs
+7. **Security**: Maintain HIPAA compliance standards
+8. **Documentation**: Update this README.md after any significant changes
+
+### Git Workflow
+```bash
+# Clone and setup
+git clone https://github.com/paulostering/vent2.git
+cd vent2
+pnpm install
+
+# Development
+pnpm dev          # Start both servers
+git add .
+git commit -m "feat: add new feature"
+git push origin main
+```
