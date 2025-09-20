@@ -34,7 +34,7 @@ export class AuthService {
       sub: user.id,
       email: user.email,
       tenantId: user.tenantId,
-      type: user.type,
+      type: user.type.toLowerCase() as 'employee' | 'customer',
       role: user.role,
     };
 
@@ -46,7 +46,7 @@ export class AuthService {
       user: {
         id: user.id,
         email: user.email,
-        type: user.type,
+        type: user.type.toLowerCase(),
         role: user.role,
         tenantId: user.tenantId,
       },

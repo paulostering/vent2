@@ -1,5 +1,5 @@
-import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
-import { User, EmployeeRole, CustomerRole } from './user.entity';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
@@ -7,82 +7,45 @@ import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UsersService {
-  // Mock users for demo - replace with actual database integration
-  private users: User[] = [
-    {
-      id: '1',
-      firstName: 'Admin',
-      lastName: 'User',
-      email: 'admin@example.com',
-      phone: '+1 (555) 123-0001',
-      passwordHash: bcrypt.hashSync('password123', 10),
-      tenantId: 'tenant-1',
-      type: 'employee',
-      role: EmployeeRole.ADMIN,
-      isActive: true,
-      createdAt: new Date('2024-01-15T10:00:00Z'),
-      updatedAt: new Date('2024-01-15T10:00:00Z'),
-      lastLogin: new Date('2024-01-20T14:30:00Z'),
-    },
-    {
-      id: '2',
-      firstName: 'Customer',
-      lastName: 'Manager',
-      email: 'customer@example.com',
-      phone: '+1 (555) 123-0002',
-      passwordHash: bcrypt.hashSync('password123', 10),
-      tenantId: 'tenant-2',
-      type: 'customer',
-      role: CustomerRole.MANAGER,
-      isActive: true,
-      createdAt: new Date('2024-01-16T11:00:00Z'),
-      updatedAt: new Date('2024-01-16T11:00:00Z'),
-      lastLogin: new Date('2024-01-19T09:15:00Z'),
-    },
-    {
-      id: '3',
-      firstName: 'Warehouse',
-      lastName: 'Staff',
-      email: 'warehouse@example.com',
-      phone: '+1 (555) 123-0003',
-      passwordHash: bcrypt.hashSync('password123', 10),
-      tenantId: 'tenant-1',
-      type: 'employee',
-      role: EmployeeRole.WAREHOUSE,
-      isActive: true,
-      createdAt: new Date('2024-01-17T09:00:00Z'),
-      updatedAt: new Date('2024-01-17T09:00:00Z'),
-      lastLogin: new Date('2024-01-18T08:45:00Z'),
-    },
-    {
-      id: '4',
-      firstName: 'Support',
-      lastName: 'Agent',
-      email: 'support@example.com',
-      phone: '+1 (555) 123-0004',
-      passwordHash: bcrypt.hashSync('password123', 10),
-      tenantId: 'tenant-1',
-      type: 'employee',
-      role: EmployeeRole.CUSTOMER_SERVICE,
-      isActive: false,
-      createdAt: new Date('2024-01-10T15:00:00Z'),
-      updatedAt: new Date('2024-01-18T16:30:00Z'),
-    },
-  ];
+  constructor(private prisma: PrismaService) {}
 
   async findAll(): Promise<UserResponseDto[]> {
     // Only return employee users for admin management
-    return this.users
-      .filter(user => user.type === 'employee')
-      .map(user => this.toResponseDto(user));
+    const users = await this.prisma.user.findMany({
+      where: { 
+        type: 'EMPLOYEE' 
+      },
+      include: {
+        tenant: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    return users.map(user => this.toResponseDto(user));
   }
 
-  async findByEmail(email: string): Promise<User | undefined> {
-    return this.users.find(user => user.email === email);
+  async findByEmail(email: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+      include: {
+        tenant: true,
+      },
+    });
+
+    return user;
   }
 
-  async findById(id: string): Promise<User | undefined> {
-    return this.users.find(user => user.id === id);
+  async findById(id: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      include: {
+        tenant: true,
+      },
+    });
+
+    return user;
   }
 
   async create(createUserDto: CreateUserDto): Promise<UserResponseDto> {
@@ -92,59 +55,99 @@ export class UsersService {
       throw new ConflictException('User with this email already exists');
     }
 
+    // Get default tenant (in a real app, this would be based on context)
+    const tenant = await this.prisma.tenant.findFirst({
+      where: { subdomain: 'main' }
+    });
+
+    if (!tenant) {
+      throw new NotFoundException('Default tenant not found');
+    }
+
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
     
-    const newUser: User = {
-      id: Date.now().toString(), // In real app, use UUID
-      firstName: createUserDto.firstName,
-      lastName: createUserDto.lastName,
-      email: createUserDto.email,
-      phone: createUserDto.phone,
-      passwordHash: hashedPassword,
-      type: createUserDto.type,
-      role: createUserDto.role,
-      tenantId: createUserDto.tenantId || 'tenant-1',
-      isActive: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
+    const newUser = await this.prisma.user.create({
+      data: {
+        firstName: createUserDto.firstName,
+        lastName: createUserDto.lastName,
+        email: createUserDto.email,
+        phone: createUserDto.phone,
+        passwordHash: hashedPassword,
+        type: 'EMPLOYEE', // Always employee for admin-created users
+        role: createUserDto.role,
+        tenantId: tenant.id,
+        isActive: true,
+      },
+      include: {
+        tenant: true,
+      },
+    });
 
-    this.users.push(newUser);
     return this.toResponseDto(newUser);
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<UserResponseDto> {
-    const userIndex = this.users.findIndex(user => user.id === id);
-    if (userIndex === -1) {
+    const existingUser = await this.findById(id);
+    if (!existingUser) {
       throw new NotFoundException('User not found');
     }
 
-    const updatedUser = {
-      ...this.users[userIndex],
-      ...updateUserDto,
-      updatedAt: new Date(),
-    };
+    // Check for email conflicts if email is being updated
+    if (updateUserDto.email && updateUserDto.email !== existingUser.email) {
+      const emailConflict = await this.findByEmail(updateUserDto.email);
+      if (emailConflict) {
+        throw new ConflictException('User with this email already exists');
+      }
+    }
 
-    this.users[userIndex] = updatedUser;
+    const updatedUser = await this.prisma.user.update({
+      where: { id },
+      data: {
+        firstName: updateUserDto.firstName,
+        lastName: updateUserDto.lastName,
+        email: updateUserDto.email,
+        phone: updateUserDto.phone,
+        role: updateUserDto.role,
+        isActive: updateUserDto.isActive,
+        updatedAt: new Date(),
+      },
+      include: {
+        tenant: true,
+      },
+    });
+
     return this.toResponseDto(updatedUser);
   }
 
   async remove(id: string): Promise<void> {
-    const userIndex = this.users.findIndex(user => user.id === id);
-    if (userIndex === -1) {
+    const user = await this.findById(id);
+    if (!user) {
       throw new NotFoundException('User not found');
     }
 
-    this.users.splice(userIndex, 1);
+    await this.prisma.user.delete({
+      where: { id },
+    });
   }
 
-  async validatePassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
-    return bcrypt.compare(plainPassword, hashedPassword);
+  async validatePassword(password: string, hashedPassword: string): Promise<boolean> {
+    return bcrypt.compare(password, hashedPassword);
   }
 
-  private toResponseDto(user: User): UserResponseDto {
-    const { passwordHash, ...userResponse } = user;
-    return userResponse;
+  private toResponseDto(user: any): UserResponseDto {
+    return {
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      phone: user.phone,
+      type: user.type.toLowerCase(),
+      role: user.role,
+      tenantId: user.tenantId,
+      isActive: user.isActive,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      lastLogin: user.lastLogin,
+    };
   }
 }
-
