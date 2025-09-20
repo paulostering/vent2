@@ -13,8 +13,8 @@ export class CreateUserDto {
   @MinLength(6)
   password: string;
 
-  @IsEnum(['employee', 'customer'])
-  type: 'employee' | 'customer';
+  @IsEnum(['employee'])
+  type: 'employee';
 
   @IsString()
   role: string;

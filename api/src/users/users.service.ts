@@ -63,7 +63,10 @@ export class UsersService {
   ];
 
   async findAll(): Promise<UserResponseDto[]> {
-    return this.users.map(user => this.toResponseDto(user));
+    // Only return employee users for admin management
+    return this.users
+      .filter(user => user.type === 'employee')
+      .map(user => this.toResponseDto(user));
   }
 
   async findByEmail(email: string): Promise<User | undefined> {

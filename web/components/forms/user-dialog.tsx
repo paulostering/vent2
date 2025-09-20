@@ -42,14 +42,14 @@ const createUserSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
-  type: z.enum(['employee', 'customer']),
+  type: z.enum(['employee']),
   role: z.string().min(1, "Role is required"),
   tenantId: z.string().min(1, "Tenant ID is required"),
 });
 
 const updateUserSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
-  type: z.enum(['employee', 'customer']),
+  type: z.enum(['employee']),
   role: z.string().min(1, "Role is required"),
   isActive: z.boolean(),
 });
@@ -80,7 +80,7 @@ export function UserDialog({ open, onOpenChange, user, mode, onSave }: UserSheet
       tenantId: 'tenant-1', // Default tenant
     } : {
       name: user?.name || '',
-      type: user?.type || 'employee' as const,
+      type: 'employee' as const, // Always employee
       role: user?.role || '',
       isActive: user?.isActive ?? true,
     },
@@ -91,11 +91,11 @@ export function UserDialog({ open, onOpenChange, user, mode, onSave }: UserSheet
     if (user && !isCreate) {
       form.reset({
         name: user.name,
-        type: user.type,
+        type: 'employee', // Always employee
         role: user.role,
         isActive: user.isActive,
       });
-      setSelectedType(user.type);
+      setSelectedType('employee');
     } else if (isCreate) {
       form.reset({
         name: '',
@@ -204,7 +204,7 @@ export function UserDialog({ open, onOpenChange, user, mode, onSave }: UserSheet
               />
             )}
 
-            {/* User Type */}
+            {/* User Type - Fixed to Employee */}
             <FormField
               control={form.control}
               name="type"
@@ -216,19 +216,16 @@ export function UserDialog({ open, onOpenChange, user, mode, onSave }: UserSheet
                       field.onChange(value);
                       setSelectedType(value as 'employee' | 'customer');
                     }} 
-                    defaultValue={field.value}
+                    defaultValue="employee"
+                    disabled
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select user type" />
+                        <SelectValue placeholder="Employee" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {USER_TYPES.map((type) => (
-                        <SelectItem key={type.value} value={type.value}>
-                          {type.label}
-                        </SelectItem>
-                      ))}
+                      <SelectItem value="employee">Employee</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

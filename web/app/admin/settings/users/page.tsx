@@ -40,7 +40,7 @@ import {
 import { User, formatRole } from "@/lib/types/user";
 import { UserDialog } from "@/components/forms/user-dialog";
 
-// Mock data - replace with API calls
+// Mock data - replace with API calls (employees only)
 const mockUsers: User[] = [
   {
     id: '1',
@@ -53,18 +53,6 @@ const mockUsers: User[] = [
     createdAt: '2024-01-15T10:00:00Z',
     updatedAt: '2024-01-15T10:00:00Z',
     lastLogin: '2024-01-20T14:30:00Z',
-  },
-  {
-    id: '2',
-    email: 'customer@example.com',
-    name: 'Customer Manager',
-    type: 'customer',
-    role: 'manager',
-    tenantId: 'tenant-2',
-    isActive: true,
-    createdAt: '2024-01-16T11:00:00Z',
-    updatedAt: '2024-01-16T11:00:00Z',
-    lastLogin: '2024-01-19T09:15:00Z',
   },
   {
     id: '3',
@@ -88,6 +76,18 @@ const mockUsers: User[] = [
     isActive: false,
     createdAt: '2024-01-10T15:00:00Z',
     updatedAt: '2024-01-18T16:30:00Z',
+  },
+  {
+    id: '5',
+    email: 'manager@example.com',
+    name: 'Operations Manager',
+    type: 'employee',
+    role: 'manager',
+    tenantId: 'tenant-1',
+    isActive: true,
+    createdAt: '2024-01-12T14:00:00Z',
+    updatedAt: '2024-01-12T14:00:00Z',
+    lastLogin: '2024-01-19T11:20:00Z',
   },
 ];
 
@@ -268,7 +268,6 @@ export default function UsersPage() {
           <SelectContent>
             <SelectItem value="all">All Types</SelectItem>
             <SelectItem value="employee">Employee</SelectItem>
-            <SelectItem value="customer">Customer</SelectItem>
           </SelectContent>
         </Select>
 
@@ -411,36 +410,6 @@ export default function UsersPage() {
         </Table>
       </div>
 
-        {/* Stats */}
-        <div className="grid gap-4 md:grid-cols-4">
-          {loading ? (
-            Array.from({ length: 4 }).map((_, index) => (
-              <div key={index} className="bg-muted/50 p-4 rounded-lg">
-                <Skeleton className="h-8 w-12 mb-2" />
-                <Skeleton className="h-4 w-20" />
-              </div>
-            ))
-          ) : (
-            <>
-              <div className="bg-muted/50 p-4 rounded-lg">
-                <div className="text-2xl font-bold">{users.length}</div>
-                <div className="text-sm text-muted-foreground">Total Users</div>
-              </div>
-              <div className="bg-muted/50 p-4 rounded-lg">
-                <div className="text-2xl font-bold">{users.filter(u => u.isActive).length}</div>
-                <div className="text-sm text-muted-foreground">Active Users</div>
-              </div>
-              <div className="bg-muted/50 p-4 rounded-lg">
-                <div className="text-2xl font-bold">{users.filter(u => u.type === 'employee').length}</div>
-                <div className="text-sm text-muted-foreground">Employees</div>
-              </div>
-              <div className="bg-muted/50 p-4 rounded-lg">
-                <div className="text-2xl font-bold">{users.filter(u => u.type === 'customer').length}</div>
-                <div className="text-sm text-muted-foreground">Customers</div>
-              </div>
-            </>
-          )}
-        </div>
 
       {/* User Dialog */}
       <UserDialog

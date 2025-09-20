@@ -6,9 +6,9 @@ export class UpdateUserDto {
   @IsOptional()
   name?: string;
 
-  @IsEnum(['employee', 'customer'])
+  @IsEnum(['employee'])
   @IsOptional()
-  type?: 'employee' | 'customer';
+  type?: 'employee';
 
   @IsString()
   @IsOptional()
