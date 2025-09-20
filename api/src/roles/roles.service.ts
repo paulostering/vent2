@@ -145,7 +145,7 @@ export class RolesService {
     // Check for name conflicts if name is being updated
     if (updateRoleDto.name && updateRoleDto.name !== existingRole.name) {
       const nameConflict = this.roles.find(role => 
-        role.id !== id && role.name.toLowerCase() === updateRoleDto.name.toLowerCase()
+        role.id !== id && role.name.toLowerCase() === updateRoleDto.name!.toLowerCase()
       );
       if (nameConflict) {
         throw new ConflictException('Role with this name already exists');
@@ -156,7 +156,7 @@ export class RolesService {
     let permissions = existingRole.permissions;
     if (updateRoleDto.permissions) {
       permissions = AVAILABLE_PERMISSIONS.filter(p => 
-        updateRoleDto.permissions.includes(p.id)
+        updateRoleDto.permissions!.includes(p.id)
       );
     }
 

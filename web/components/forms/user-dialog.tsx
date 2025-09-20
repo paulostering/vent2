@@ -83,7 +83,7 @@ export function UserDialog({ open, onOpenChange, user, mode, onSave }: UserSheet
       phone: '',
       password: '',
       type: 'employee' as const,
-      role: '',
+      role: '', // No default role
       tenantId: 'tenant-1', // Default tenant
     } : {
       firstName: user?.firstName ?? '',
@@ -117,7 +117,7 @@ export function UserDialog({ open, onOpenChange, user, mode, onSave }: UserSheet
         phone: '',
         password: '',
         type: 'employee',
-        role: '',
+        role: '', // No default role
         tenantId: 'tenant-1',
       });
       setSelectedType('employee');
@@ -251,31 +251,15 @@ export function UserDialog({ open, onOpenChange, user, mode, onSave }: UserSheet
                 />
               )}
 
-              {/* User Type - Fixed to Employee */}
+              {/* User Type - Hidden, always employee */}
               <FormField
                 control={form.control}
                 name="type"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>User Type</FormLabel>
-                    <Select 
-                      onValueChange={(value) => {
-                        field.onChange(value);
-                        setSelectedType(value as 'employee' | 'customer');
-                      }} 
-                      defaultValue="employee"
-                      disabled
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Employee" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="employee">Employee</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
+                  <FormItem className="hidden">
+                    <FormControl>
+                      <input type="hidden" {...field} value="employee" />
+                    </FormControl>
                   </FormItem>
                 )}
               />
@@ -287,10 +271,10 @@ export function UserDialog({ open, onOpenChange, user, mode, onSave }: UserSheet
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Role</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select role" />
+                          <SelectValue placeholder="Select a role" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
