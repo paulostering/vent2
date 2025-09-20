@@ -5,13 +5,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import {
   Form,
   FormControl,
@@ -54,7 +54,7 @@ const updateUserSchema = z.object({
   isActive: z.boolean(),
 });
 
-interface UserDialogProps {
+interface UserSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   user: User | null;
@@ -62,7 +62,7 @@ interface UserDialogProps {
   onSave: (data: CreateUserData | UpdateUserData) => void;
 }
 
-export function UserDialog({ open, onOpenChange, user, mode, onSave }: UserDialogProps) {
+export function UserDialog({ open, onOpenChange, user, mode, onSave }: UserSheetProps) {
   const [selectedType, setSelectedType] = useState<'employee' | 'customer'>('employee');
   const [loading, setLoading] = useState(false);
 
@@ -130,22 +130,23 @@ export function UserDialog({ open, onOpenChange, user, mode, onSave }: UserDialo
   const availableRoles = getRolesByType(selectedType);
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent className="sm:max-w-[540px] w-[90vw]">
+        <SheetHeader>
+          <SheetTitle>
             {isCreate ? 'Create New User' : `Edit ${user?.name}`}
-          </DialogTitle>
-          <DialogDescription>
+          </SheetTitle>
+          <SheetDescription>
             {isCreate 
               ? 'Add a new user to the system with appropriate role and permissions.'
               : 'Update user information, role, and status.'
             }
-          </DialogDescription>
-        </DialogHeader>
+          </SheetDescription>
+        </SheetHeader>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <div className="py-6">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             {/* Name Field */}
             <FormField
               control={form.control}
@@ -297,22 +298,23 @@ export function UserDialog({ open, onOpenChange, user, mode, onSave }: UserDialo
               />
             )}
 
-            <DialogFooter>
-              <Button 
-                type="button" 
-                variant="outline" 
-                onClick={() => onOpenChange(false)}
-                disabled={loading}
-              >
-                Cancel
-              </Button>
-              <Button type="submit" disabled={loading}>
-                {loading ? 'Saving...' : isCreate ? 'Create User' : 'Save Changes'}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+              <SheetFooter className="flex gap-2 pt-6">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => onOpenChange(false)}
+                  disabled={loading}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={loading}>
+                  {loading ? 'Saving...' : isCreate ? 'Create User' : 'Save Changes'}
+                </Button>
+              </SheetFooter>
+            </form>
+          </Form>
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 }

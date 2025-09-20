@@ -2,6 +2,17 @@
 
 import { useState, useEffect } from "react";
 import { Plus, Search, Filter, MoreHorizontal, Edit, Trash2, UserCheck, UserX } from "lucide-react";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { Separator } from "@/components/ui/separator";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -192,20 +203,51 @@ export default function UsersPage() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold">User Management</h1>
-          <p className="text-muted-foreground">
-            Manage user accounts, roles, and permissions
-          </p>
+    <>
+      {/* Header with Breadcrumbs */}
+      <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+        <div className="flex items-center gap-2 px-4">
+          <SidebarTrigger className="-ml-1" />
+          <Separator
+            orientation="vertical"
+            className="mr-2 data-[orientation=vertical]:h-4"
+          />
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem className="hidden md:block">
+                <BreadcrumbLink href="/admin">
+                  Admin Dashboard
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator className="hidden md:block" />
+              <BreadcrumbItem className="hidden md:block">
+                <BreadcrumbLink href="/admin/settings">
+                  Settings
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator className="hidden md:block" />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Users</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
         </div>
-        <Button onClick={handleCreateUser}>
-          <Plus className="mr-2 h-4 w-4" />
-          Add User
-        </Button>
-      </div>
+      </header>
+
+      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+        {/* Page Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-semibold">User Management</h1>
+            <p className="text-muted-foreground">
+              Manage user accounts, roles, and permissions
+            </p>
+          </div>
+          <Button onClick={handleCreateUser}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add User
+          </Button>
+        </div>
 
       {/* Filters */}
       <div className="flex items-center gap-4">
@@ -257,7 +299,37 @@ export default function UsersPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredUsers.length === 0 ? (
+            {loading ? (
+              // Skeleton loading rows
+              Array.from({ length: 4 }).map((_, index) => (
+                <TableRow key={index}>
+                  <TableCell>
+                    <div className="flex flex-col gap-2">
+                      <Skeleton className="h-4 w-32" />
+                      <Skeleton className="h-3 w-48" />
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-6 w-16" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-20" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-6 w-16" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-24" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-20" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-8 w-8" />
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : filteredUsers.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} className="text-center py-8">
                   <div className="flex flex-col items-center gap-2">
@@ -339,25 +411,36 @@ export default function UsersPage() {
         </Table>
       </div>
 
-      {/* Stats */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <div className="bg-muted/50 p-4 rounded-lg">
-          <div className="text-2xl font-bold">{users.length}</div>
-          <div className="text-sm text-muted-foreground">Total Users</div>
+        {/* Stats */}
+        <div className="grid gap-4 md:grid-cols-4">
+          {loading ? (
+            Array.from({ length: 4 }).map((_, index) => (
+              <div key={index} className="bg-muted/50 p-4 rounded-lg">
+                <Skeleton className="h-8 w-12 mb-2" />
+                <Skeleton className="h-4 w-20" />
+              </div>
+            ))
+          ) : (
+            <>
+              <div className="bg-muted/50 p-4 rounded-lg">
+                <div className="text-2xl font-bold">{users.length}</div>
+                <div className="text-sm text-muted-foreground">Total Users</div>
+              </div>
+              <div className="bg-muted/50 p-4 rounded-lg">
+                <div className="text-2xl font-bold">{users.filter(u => u.isActive).length}</div>
+                <div className="text-sm text-muted-foreground">Active Users</div>
+              </div>
+              <div className="bg-muted/50 p-4 rounded-lg">
+                <div className="text-2xl font-bold">{users.filter(u => u.type === 'employee').length}</div>
+                <div className="text-sm text-muted-foreground">Employees</div>
+              </div>
+              <div className="bg-muted/50 p-4 rounded-lg">
+                <div className="text-2xl font-bold">{users.filter(u => u.type === 'customer').length}</div>
+                <div className="text-sm text-muted-foreground">Customers</div>
+              </div>
+            </>
+          )}
         </div>
-        <div className="bg-muted/50 p-4 rounded-lg">
-          <div className="text-2xl font-bold">{users.filter(u => u.isActive).length}</div>
-          <div className="text-sm text-muted-foreground">Active Users</div>
-        </div>
-        <div className="bg-muted/50 p-4 rounded-lg">
-          <div className="text-2xl font-bold">{users.filter(u => u.type === 'employee').length}</div>
-          <div className="text-sm text-muted-foreground">Employees</div>
-        </div>
-        <div className="bg-muted/50 p-4 rounded-lg">
-          <div className="text-2xl font-bold">{users.filter(u => u.type === 'customer').length}</div>
-          <div className="text-sm text-muted-foreground">Customers</div>
-        </div>
-      </div>
 
       {/* User Dialog */}
       <UserDialog
@@ -413,6 +496,7 @@ export default function UsersPage() {
           }
         }}
       />
-    </div>
+      </div>
+    </>
   );
 }
